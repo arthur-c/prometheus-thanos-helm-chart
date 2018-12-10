@@ -1,0 +1,19 @@
+{{- if .Values.thanosSidecar.s3.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "prometheus.server.labels" . | nindent 4 }}
+  name: {{ template "prometheus.server.fullname" . }}-thanos-sidecar-s3-config
+data:
+  s3.yaml: |
+    type: S3
+    config:
+      bucket: {{ .Values.thanosSidecar.s3.bucket }}
+      endpoint: {{ .Values.thanosSidecar.s3.endpoint }}
+      insecure: {{ .Values.thanosSidecar.s3.insecure }}
+      signature_version2: {{ .Values.thanosSidecar.s3.signatureV2 }}
+      encrypt_sse: {{ .Values.thanosSidecar.s3.encryptSse }}
+      http_config:
+        idle_conn_timeout: 0s
+{{- end -}}

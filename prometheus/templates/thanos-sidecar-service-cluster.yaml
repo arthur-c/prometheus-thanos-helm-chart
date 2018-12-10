@@ -1,0 +1,30 @@
+{{- if .Values.thanosSidecar.enabled }}
+{{- if not .Values.thanosSidecar.clusterDisabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "prometheus.server.fullname" . }}-thanos-sidecar-cluster
+{{- if .Values.thanosSidecar.clusterService.annotations }}
+  annotations:
+{{ toYaml .Values.thanosSidecar.clusterService.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "prometheus.server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.thanosSidecar.clusterService.type }}
+  {{- if .Values.thanosSidecar.clusterService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.thanosSidecar.clusterService.externalTrafficPolicy }}
+  {{- end }}
+  labels:
+  ports:
+    - port: 10900
+      targetPort: cluster
+      {{- if .Values.thanosSidecar.clusterService.nodePortEnabled }}
+      nodePort: {{ .Values.thanosSidecar.clusterService.NodePort }}
+      {{- end }}
+      protocol: TCP
+      name: cluster
+  selector:
+    {{- include "prometheus.server.matchLabels" . | nindent 4 }}
+{{- end }}
+{{- end -}}

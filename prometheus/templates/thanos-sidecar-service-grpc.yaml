@@ -1,0 +1,27 @@
+{{- if .Values.thanosSidecar.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "prometheus.server.fullname" . }}-thanos-sidecar-grpc
+{{- if .Values.thanosSidecar.grpcService.annotations }}
+  annotations:
+{{ toYaml .Values.thanosSidecar.grpcService.annotations | indent 4 }}
+{{- end }}
+  labels:
+    {{- include "prometheus.server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.thanosSidecar.grpcService.type }}
+  {{- if .Values.thanosSidecar.grpcService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.thanosSidecar.grpcService.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: 10901
+      targetPort: grpc
+      {{- if .Values.thanosSidecar.grpcService.nodePortEnabled }}
+      nodePort: {{ .Values.thanosSidecar.grpcService.NodePort }}
+      {{- end }}
+      protocol: TCP
+      name: grpc
+  selector:
+    {{- include "prometheus.server.matchLabels" . | nindent 4 }}
+{{- end -}}
