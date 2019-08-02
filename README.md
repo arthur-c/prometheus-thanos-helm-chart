@@ -2,7 +2,7 @@
 
 This chart is a fork from stable/prometheus helm chart.
 
-Last sync: 2019-03-10
+Last sync: 2019-07-31
 
 Additions
 
